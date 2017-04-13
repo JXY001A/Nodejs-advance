@@ -1,8 +1,18 @@
+/**
+ * 
+ * @authors: JXY001A
+ * @Emali:   JXY001A@aliyun.com
+ * @date:    2017-04-13 16:36:10
+ * @desc:    实现对慕课网课程数据的简单爬去程序
+ * @github:  github.com/JXY001A
+ * @version: 1.0
+ */
+
 var http = require('http');
 var cheerio = require('cheerio');
 var url = 'http://www.imooc.com/learn/54';
 
-function filterChapters(html){
+function filterChapters(html) {
 	// courseData = [
 	// {
 	// 		chapterTitle:'',
@@ -17,7 +27,7 @@ function filterChapters(html){
 		// 	chapterTitle:'',
 		// 	video:[{title:'',id:''},……]
 		// }
-		var chapertData={};
+		var chapertData = {};
 
 		$(this).find('.chapter-content').remove();
 		var chapertTitle = $(this).find('strong').text();
@@ -29,38 +39,38 @@ function filterChapters(html){
 			var videoHref = $(this).find('.J-media-item');
 			var videoId = videoHref.attr('href').split('/video')[1];
 			var videoTitile = videoHref.text().split('(')[0].trim();
-			var videoData ={
-				id:videoId,
-				title:videoTitile
+			var videoData = {
+				id: videoId,
+				title: videoTitile
 			};
 			videoArr.push(videoData);
 		});
-		chapertData.video=videoArr;
+		chapertData.video = videoArr;
 		courseData.push(chapertData);
 	});
 
 	return courseData;
 }
 
-function resolveCourseData (courseData){
+function resolveCourseData(courseData) {
 
-	courseData.forEach(function(chapter){
+	courseData.forEach(function(chapter) {
 		console.log(chapter.chapertTitle);
-		chapter.video.forEach(function (video){
-			console.log('【'+video.title+'】'+video.id + '\n');			
+		chapter.video.forEach(function(video) {
+			console.log('【' + video.title + '】' + video.id + '\n');
 		});
 	});
 }
 
-http.get(url,function(res){
+http.get(url, function(res) {
 	var html = '';
-	res.on('data',function(data){
-		html+=data;
+	res.on('data', function(data) {
+		html += data;
 	});
-	res.on('end',function (){
+	res.on('end', function() {
 		var courseData = filterChapters(html);
 		resolveCourseData(courseData);
 	});
-}).on('errot',function (){
+}).on('errot', function() {
 	console.log("获取慕课网数据出错");
 });
